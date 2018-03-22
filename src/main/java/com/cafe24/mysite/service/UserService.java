@@ -16,7 +16,7 @@ public class UserService {
     }
     
     public UserVO getUser( UserVO vo ) {
-	return userDao.read( vo.getEmail(), vo.getPassword() );
+	return userDao.read( vo );
     }
     
     public UserVO getUserByNo( UserVO vo ) {

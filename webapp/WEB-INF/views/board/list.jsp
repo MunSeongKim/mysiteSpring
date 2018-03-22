@@ -19,6 +19,9 @@
 					<input type="text" id="kwd" name="k" value="" />
 					<input type="submit" value="찾기" />
 				</form>
+				<c:if test='${ param.k != "" }'>
+					<p>"${ param.k }"의 검색 결과 : ${ pager.startPostNumber }개가 검색됨.</p>
+				</c:if>
 				<table class="tbl-ex">
 					<tr>
 						<th>번호</th>
@@ -32,18 +35,18 @@
 					<c:forEach items="${ list }" var="result" varStatus="status">
 					<tr>
 						<td>${ pager.startPostNumber - status.index }</td>
-						<td style="text-align:left; padding-left: ${ result.vo.depth * 20 }px">
-							<c:if test='${ result.vo.depth gt 0 }'>
+						<td style="text-align:left; padding-left: ${ result.depth * 20 }px">
+							<c:if test='${ result.depth gt 0 }'>
 								<img src="${ pageContext.servletContext.contextPath }/assets/images/reply.png" />
 							</c:if>
-							<a href="${ pageContext.servletContext.contextPath }/board/view/${ pager.currentPageNumber }/${ result.vo.no }?k=${ keyword }">${ result.vo.title }</a>
+							<a href="${ pageContext.servletContext.contextPath }/board/view/${ pager.currentPageNumber }/${ result.no }?k=${ keyword }">${ result.title }</a>
 						</td>
 						<td>${ result.userName }</td>
-						<td>${ result.vo.hitCount }</td>
-						<td>${ result.vo.regDate }</td>
+						<td>${ result.hitCount }</td>
+						<td>${ result.regDate }</td>
 						<td>
-						<c:if test="${ not empty authUser && result.vo.userNo eq authUser.no }">
-							<a href="${ pageContext.servletContext.contextPath }/board/delete/${ pager.currentPageNumber }/${ result.vo.no }?k=${ keyword }" class="del">삭제</a>
+						<c:if test="${ not empty authUser && result.userNo eq authUser.no }">
+							<a href="${ pageContext.servletContext.contextPath }/board/delete/${ pager.currentPageNumber }/${ result.no }?k=${ keyword }" class="del">삭제</a>
 						</c:if>
 						</td>
 					</tr>

@@ -1,6 +1,18 @@
 package com.cafe24.mysite.component;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.cafe24.mysite.repository.BoardDAO;
+
+@Component
 public class Pager {
+    @Autowired
+    private BoardDAO boardDao;
+    
     /**
      *   startPageNumber - 한 화면의 시작 페이지 번호
      *     endPageNumber - 한 화면의 끝 페이지 번호
@@ -118,5 +130,38 @@ public class Pager {
 		+ leftNavigator + ", rightNavigator=" + rightNavigator + ", startPostNumber=" + startPostNumber
 		+ ", postCount=" + postCount + ", pageCount=" + pageCount + ", totalPageCount=" + totalPageCount
 		+ ", currentPageNumber=" + currentPageNumber + "]";
+    }
+    
+    public void setPager(int pageNo, String keyword) {
+	Map<String, Object> map = new HashMap<String, Object>();
+	map.put("keyword", keyword);
+	int count = boardDao.readPostCount( map);
+	int diff = ((pageNo - 1) % pageCount);
+	
+	// 시작, 끝, 현재 페이지 번호 설정
+	this.startPageNumber = pageNo - diff;
+	this.endPageNumber = pageNo + (pageCount - diff - 1);
+	this.currentPageNumber = pageNo;
+	
+	// 각 페이지의 시작하는 포스트의 번호 설정
+	this.startPostNumber = count - ((pageNo - 1) * postCount);
+	
+	// 전체 페이지의 수 설정
+	if ( (count % this.postCount) == 0 ) {
+	    this.totalPageCount = count / postCount;
+	} else {
+	    this.totalPageCount = (count / postCount) + 1;
+	}
+	
+	// 좌, 우 네비게이터 화면 표시 설정
+	this.leftNavigator = false;
+	this.rightNavigator = false;
+
+	if ( this.endPageNumber < this.totalPageCount ) {
+	    this.rightNavigator = true;
+	}
+	if ( this.startPageNumber > this.pageCount ) {
+	    this.leftNavigator = true;
+	}
     }
 }

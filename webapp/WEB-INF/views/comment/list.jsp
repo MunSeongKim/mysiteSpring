@@ -23,13 +23,13 @@
 		<c:forEach items='${ commentList }' var="comment" varStatus="status" >
 		<tr align='right'>
 			<td>${ comment.userName }</td>
-			<td><p style="width:100%">${ comment.vo.content }</p></td>
+			<td><p style="width:100%">${ comment.content }</p></td>
 			<td align='right'>
-				${ comment.vo.regDate }
+				${ comment.regDate }
 			</td>
 			<td align='right'>
-				<c:if test='${ not empty authUser && comment.vo.userNo eq authUser.no }'>
-				<a href="${ pageContext.servletContext.contextPath }/comment/delete/${ pageNo }/${ boardNo }/${ comment.vo.no }?k=${ keyword }" class="del" style="text-align:right">삭제</a>
+				<c:if test='${ not empty authUser && comment.userNo eq authUser.no }'>
+				<a href="${ pageContext.servletContext.contextPath }/comment/delete/${ pageNo }/${ boardNo }/${ comment.no }?k=${ keyword }" class="del" style="text-align:right">삭제</a>
 				</c:if>
 			</td>
 		</tr>

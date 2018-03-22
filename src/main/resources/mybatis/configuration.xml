@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias alias="uservo" type="com.cafe24.mysite.vo.UserVO"/>
+		<typeAlias alias="guestbookvo" type="com.cafe24.mysite.vo.GuestbookVO" />
+		<typeAlias alias="boardvo" type="com.cafe24.mysite.vo.BoardVO" />
+		<typeAlias alias="commentvo" type="com.cafe24.mysite.vo.CommentVO" />
+		<typeAlias alias="boardlistdto" type="com.cafe24.mysite.dto.BoardListDTO" />
+		<typeAlias alias="commentlistdto" type="com.cafe24.mysite.dto.CommentListDTO" />
+	</typeAliases>
+	<mappers>
+		<mapper resource="mybatis/mappers/user.xml" />
+		<mapper resource="mybatis/mappers/board.xml" />
+		<mapper resource="mybatis/mappers/comment.xml" />
+		<mapper resource="mybatis/mappers/guestbook.xml" />
+	</mappers>
+</configuration>

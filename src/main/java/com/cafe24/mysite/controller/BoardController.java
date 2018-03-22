@@ -5,7 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.transform.impl.AddDelegateTransformer;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -15,13 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cafe24.mysite.component.Pager;
-import com.cafe24.mysite.component.PagerUtil;
-import com.cafe24.mysite.dto.BoardDTO;
-import com.cafe24.mysite.dto.CommentDTO;
+import com.cafe24.mysite.dto.BoardListDTO;
+import com.cafe24.mysite.dto.CommentListDTO;
 import com.cafe24.mysite.service.BoardService;
 import com.cafe24.mysite.service.CommentService;
 import com.cafe24.mysite.vo.BoardVO;
-import com.cafe24.mysite.vo.CommentVO;
 import com.cafe24.mysite.vo.UserVO;
 
 @Controller
@@ -32,19 +29,19 @@ public class BoardController {
     @Autowired
     private CommentService commentService;
     @Autowired
-    private PagerUtil pagerUtil;
-
+    private Pager pager;
+    
     @RequestMapping( value = "/list", method = RequestMethod.GET )
     public String list() {
 	return "redirect:/board/list/1?k=";
     }
 
     @RequestMapping( value = "/list/{pno}", method = RequestMethod.GET )
-    public String list( @PathVariable( "pno" ) int pageNo, @RequestParam( "k" ) String keyword, Model model ) {
-	Pager pager = new Pager();
-	pager = pagerUtil.setUpPager( pager, pageNo, keyword );
+    public String list( @PathVariable( "pno" ) int pageNo,
+	    @RequestParam( value="k", required=false, defaultValue="" ) String keyword, Model model ) {
+	pager.setPager(pageNo, keyword);
 
-	List<BoardDTO> list = boardService.getList( keyword, pager );
+	List<BoardListDTO> list = boardService.getList( keyword, pager );
 	model.addAttribute( "pager", pager );
 	model.addAttribute( "list", list );
 	model.addAttribute( "keyword", keyword );
@@ -54,10 +51,9 @@ public class BoardController {
     @RequestMapping( value = "/list", method = RequestMethod.POST )
     public String list( @RequestParam( "k" ) String keyword, Model model ) {
 	int pageNo = 1;
-	Pager pager = new Pager();
-	pager = pagerUtil.setUpPager( pager, pageNo, keyword );
+	pager.setPager(pageNo, keyword);
 
-	List<BoardDTO> list = boardService.getList( keyword, pager );
+	List<BoardListDTO> list = boardService.getList( keyword, pager );
 	model.addAttribute( "pager", pager );
 	model.addAttribute( "list", list );
 	model.addAttribute( "keyword", keyword );
@@ -67,8 +63,9 @@ public class BoardController {
     @RequestMapping( value = "/view/{pno}/{bno}", method = RequestMethod.GET )
     public String view( @PathVariable( "pno" ) int pageNo, @PathVariable( "bno" ) Long boardNo,
 	    @RequestParam( "k" ) String keyword, Model model ) {
+	boardService.updateHitCount( boardNo );
 	BoardVO boardVo = boardService.getPost( boardNo );
-	List<CommentDTO> commentList = commentService.getList( boardNo );
+	List<CommentListDTO> commentList = commentService.getList( boardNo );
 
 	model.addAttribute( "commentList", commentList );
 	model.addAttribute( "board", boardVo );
@@ -97,10 +94,10 @@ public class BoardController {
     public String write( @RequestParam( "p" ) int pageNo, @RequestParam( "k" ) String keyword,
 	    @ModelAttribute BoardVO vo, HttpSession session, Model model ) {
 	UserVO authUser = (UserVO) session.getAttribute( "authUser" );
+	vo.setUserNo( authUser.getNo() );
 
-	boardService.writePost( vo, authUser.getNo() );
+	BoardVO boardVo = boardService.writePost( vo );
 
-	BoardVO boardVo = boardService.getPostAtLast();
 	model.addAttribute( "board", boardVo );
 	model.addAttribute( "pageNo", pageNo );
 	model.addAttribute( "keyword", keyword );
@@ -112,6 +109,7 @@ public class BoardController {
 	    @RequestParam( "k" ) String keyword, Model model ) {
 
 	BoardVO boardVo = boardService.getPost( boardNo );
+	
 	model.addAttribute( "pageNo", pageNo );
 	model.addAttribute( "boardNo", boardNo );
 	model.addAttribute( "keyword", keyword );
@@ -124,8 +122,10 @@ public class BoardController {
 	    @ModelAttribute BoardVO vo, HttpSession session, Model model ) {
 
 	UserVO authUser = (UserVO) session.getAttribute( "authUser" );
-	boardService.writeReply( vo, authUser.getNo() );
-	BoardVO boardVo = boardService.getPostAtLast();
+	vo.setUserNo( authUser.getNo() );
+	
+	boardService.updatePostOrder( vo );
+	BoardVO boardVo = boardService.writePost( vo );
 
 	return "redirect:/board/view/" + pageNo + "/" + boardVo.getNo() + "?k=" + keyword;
     }
@@ -134,21 +134,20 @@ public class BoardController {
     public String modify( @PathVariable( "pno" ) int pageNo, @PathVariable( "bno" ) Long boardNo,
 	    @RequestParam( "k" ) String keyword, Model model ) {
 	BoardVO boardVo = boardService.getPost( boardNo );
-	model.addAttribute("result", boardVo);
-	model.addAttribute("pageNo", pageNo);
-	model.addAttribute("keyword", keyword);
-	
+	model.addAttribute( "result", boardVo );
+	model.addAttribute( "pageNo", pageNo );
+	model.addAttribute( "keyword", keyword );
+
 	return "board/modify";
     }
-    
+
     @RequestMapping( value = "/modify", method = RequestMethod.POST )
-    public String modify(@ModelAttribute BoardVO vo, 
-	    @RequestParam( "pno" ) int pageNo,
+    public String modify( @ModelAttribute BoardVO vo, @RequestParam( "pno" ) int pageNo,
 	    @RequestParam( "k" ) String keyword, Model model ) {
 	boardService.modifyPost( vo );
-	model.addAttribute("pageNo", pageNo);
-	model.addAttribute("keyword", keyword);
-	
+	model.addAttribute( "pageNo", pageNo );
+	model.addAttribute( "keyword", keyword );
+
 	return "redirect:/board/view/" + pageNo + "/" + vo.getNo() + "?k=" + keyword;
     }
 }
