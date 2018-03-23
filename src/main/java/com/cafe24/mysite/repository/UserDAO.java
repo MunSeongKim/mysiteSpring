@@ -9,20 +9,24 @@ import com.cafe24.mysite.vo.UserVO;
 
 @Repository
 public class UserDAO {
-    @Autowired 
+    @Autowired
     private SqlSession sqlSession;
 
     public boolean create( UserVO vo ) {
-	int count = sqlSession.insert( "user.create", vo );
+	int count = sqlSession.insert( "user.insert", vo );
 	return count == 1;
     }
 
     public UserVO read( UserVO vo ) throws UserDAOException {
-	return sqlSession.selectOne( "user.readByEmailAndPassword", vo );
+	return sqlSession.selectOne( "user.selectByEmailAndPassword", vo );
+    }
+
+    public UserVO read( String email ) {
+	return sqlSession.selectOne( "user.selectByEmail", email );
     }
 
     public UserVO read( Long no ) {
-	return sqlSession.selectOne( "user.readByNo", no );
+	return sqlSession.selectOne( "user.selectByNo", no );
     }
 
     public boolean update( UserVO vo ) {

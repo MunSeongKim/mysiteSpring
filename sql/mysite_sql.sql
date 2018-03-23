@@ -71,11 +71,21 @@ SELECT no, name, password
   FROM users
  WHERE email='go@a.com';
 
+SELECT no, name, password
+  FROM users;
+
 -- 수정(회원정보)
 UPDATE users
    SET password=PASSWORD('1234')
  WHERE no=2;
  
+INSERT INTO guestbook(name, password, content, reg_date)
+	 SELECT name, password, content, now() FROM guestbook;
+
+SELECT * FROM guestbook order by no desc;
+
+DELETE FROM guestbook;
+commit;
  
  SELECT * FROM board LIMIT 1;
 (SELECT IFNULL(MAX(group_no), 0) +1 FROM board);
@@ -95,8 +105,8 @@ SELECT last_insert_id();
          users.name
     FROM board, users
    WHERE (board.user_no = users.no
-     AND board.title LIKE '%11%')
-      OR (board.user_no = users.no AND board.content LIKE '%11%')
+     AND board.title LIKE '%%')
+      OR (board.user_no = users.no AND board.content LIKE '%%')
 ORDER BY group_no DESC, order_no ASC
    LIMIT 0, 10;
    
@@ -194,8 +204,6 @@ DELIMITER $$
 CALL loopInsert$$
 
 SELECT * FROM board;
-
-
 
 
 

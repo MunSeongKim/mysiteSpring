@@ -26,14 +26,14 @@ public class BoardDAO {
 	map.put( "keyword", keyword );
 	map.put( "start", start );
 	map.put( "count", count );
-	List<BoardListDTO> list = sqlSession.selectList( "board.readAll", map );
+	List<BoardListDTO> list = sqlSession.selectList( "board.selectAll", map );
 
 	return list;
     }
 
     // --
     public BoardVO read( Long no ) {
-	return sqlSession.selectOne( "board.read", no );
+	return sqlSession.selectOne( "board.select", no );
     }
     
     public int readPostCount( Map<String, Object> map ){

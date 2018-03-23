@@ -18,11 +18,17 @@ import com.cafe24.mysite.vo.GuestbookVO;
 public class GuestbookController {
     @Autowired
     private GuestbookService gbService;
-
+    
+    private static final Long start = 0L;
+    private static final Long count = 5L;
+    
     @RequestMapping( "/list" )
     public String list( Model model ) {
-	List<GuestbookVO> list = gbService.getList();
+	List<GuestbookVO> list = gbService.getList(start);
+	Long startNumber = gbService.getCount();
 	model.addAttribute( "list", list );
+	model.addAttribute( "startNumber", startNumber);
+	model.addAttribute( "postCount", count );
 	return "guestbook/list";
     }
 

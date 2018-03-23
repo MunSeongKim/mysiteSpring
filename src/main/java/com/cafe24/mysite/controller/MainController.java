@@ -10,4 +10,16 @@ public class MainController {
     public String main() {
 	return "main/index";
     }
+
+//    @ResponseBody
+//    @RequestMapping( "hello" )
+//    public String hello() {
+//	return "안녕!";
+//    }
+//
+//    @ResponseBody
+//    @RequestMapping( "hello2" )
+//    public JSONResult hello2() {
+//	return JSONResult.success( new UserVO() );
+//    }
 }

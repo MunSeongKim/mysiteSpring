@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="board">
-	<select id="readAll" parameterType="map" resultType="boardlistdto">
+	<select id="selectAll" parameterType="map" resultType="boardlistdto">
 		<![CDATA[
 			  SELECT board.no,
 	    		     board.title,
@@ -35,7 +35,7 @@
 		]]>
 	</select>
 
-	<select id="read" parameterType="long" resultType="boardvo">
+	<select id="select" parameterType="long" resultType="boardvo">
 		<![CDATA[
 			SELECT board.no, 
 	    	       board.title, 
@@ -109,7 +109,7 @@
 	</delete>
 	
 	<select id="selectCount"
-			parameterType="String"
+			parameterType="string"
 			resultType="int">
 		<![CDATA[
 			SELECT COUNT(*)
