@@ -8,6 +8,5 @@
 </head>
 <body>
 	<h1>Oops! Sorry:(</h1>
-	<p style="color:#ff0000;">${ errors }</p>
 </body>
 </html>
