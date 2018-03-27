@@ -22,7 +22,8 @@
 				</property>
 			</bean>
 			<!-- Return type: Object, use jackson library -->
-			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
 				<property name="supportedMediaTypes">
 					<list>
 						<value>application/json; charset=UTF-8</value>
@@ -30,11 +31,37 @@
 				</property>
 			</bean>
 		</mvc:message-converters>
+		
+		<!-- argument resolver -->
+		<mvc:argument-resolvers>
+			<bean class="com.cafe24.security.AuthUserHandlerMethodArgumentResolver" />
+		</mvc:argument-resolvers>
 	</mvc:annotation-driven>
+
+	<!-- Interceptors -->
+	<mvc:interceptors>
+		<!-- <mvc:interceptor> <mvc:mapping path="/guestbook/**" /> <bean class="com.cafe24.mysite.interceptor.MyInterceptor2" 
+			/> </mvc:interceptor> -->
+		<mvc:interceptor>
+			<mvc:mapping path="/user/auth" />
+			<bean class="com.cafe24.security.AuthLoginInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/user/logout" />
+			<bean class="com.cafe24.security.AuthLogoutInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/user/auth" />
+			<mvc:exclude-mapping path="/user/logout" />
+			<mvc:exclude-mapping path="/assets/**" />
+			<bean class="com.cafe24.security.AuthInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+
 
 	<!-- 서블릿 컨테이너의 디폴트 서블릿 위임 핸들러 -->
 	<mvc:default-servlet-handler />
-
 
 	<!-- ViewResolver 설정 -->
 	<bean id="viewResolver"
@@ -45,8 +72,6 @@
 		<property name="suffix" value=".jsp" />
 		<property name="order" value="1" />
 	</bean>
-
-
 
 	<!-- annotation 기반의 Bean 설정 -->
 	<context:annotation-config />

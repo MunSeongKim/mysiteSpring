@@ -19,8 +19,8 @@ public class UserService {
 	return userDao.read( vo );
     }
     
-    public UserVO getUserByNo( UserVO vo ) {
-	return userDao.read( vo.getNo() );
+    public UserVO getUserByNo( Long no ) {
+	return userDao.read( no );
     }
     
     public UserVO setUser(UserVO vo ) {

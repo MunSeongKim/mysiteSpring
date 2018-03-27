@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cafe24.mysite.service.UserService;
 import com.cafe24.mysite.vo.UserVO;
+import com.cafe24.security.Auth;
+import com.cafe24.security.AuthUser;
 
 @Controller
 @RequestMapping( "/user" )
@@ -38,38 +40,15 @@ public class UserController {
     public String login() {
 	return "user/login";
     }
-
-    @RequestMapping( value = "/login", method = RequestMethod.POST )
-    public String login( @ModelAttribute UserVO vo, Model model, HttpSession session ) {
-	UserVO authUser = userService.getUser( vo );
-
-	// 인증 처리
-	if ( authUser == null ) {
-	    model.addAttribute( "result", "fail" );
-	    model.addAttribute( "email", vo.getEmail() );
-	    return "/user/login";
-	}
-
-	session.setAttribute( "authUser", authUser );
-	return "redirect:/main";
-    }
-
-    @RequestMapping( value = "/logout", method = RequestMethod.GET )
-    public String logout( HttpSession session ) {
-	session.removeAttribute( "authUser" );
-	session.invalidate();
-	return "redirect:/main";
-    }
-
+   
+    @Auth
     @RequestMapping( value = "/modify", method = RequestMethod.GET )
-    public String modify( HttpSession session, Model model ) {
-	// Access Controll
-	UserVO authUser = (UserVO) session.getAttribute( "authUser" );
-	if ( authUser == null ) {
-	    return "redirect:/main";
-	}
+    public String modify( @AuthUser UserVO authUser, Model model ) {
+//    public String modify( HttpSession session, Model model ) {
+//	UserVO authUser = (UserVO) session.getAttribute( "authUser" );
 
-	UserVO user = userService.getUserByNo( authUser );
+	System.out.println( authUser );
+	UserVO user = userService.getUserByNo( authUser.getNo() );
 	model.addAttribute( "vo", user );
 	return "user/modify";
     }

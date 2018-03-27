@@ -1,3 +1,4 @@
+
 -- 게시판
 ALTER TABLE `board`
 	DROP FOREIGN KEY `FK_users_TO_board`; -- 회원 -> 게시판
@@ -84,7 +85,10 @@ INSERT INTO guestbook(name, password, content, reg_date)
 
 SELECT * FROM guestbook order by no desc;
 
+rollback;
+
 DELETE FROM guestbook;
+
 commit;
  
  SELECT * FROM board LIMIT 1;
