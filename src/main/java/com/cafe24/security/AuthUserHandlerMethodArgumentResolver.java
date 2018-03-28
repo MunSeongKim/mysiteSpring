@@ -27,7 +27,6 @@ public class AuthUserHandlerMethodArgumentResolver implements HandlerMethodArgum
 	if ( session == null ) {
 	    return null;
 	}
-
 	return session.getAttribute( "authUser" );
     }
 
