@@ -73,17 +73,6 @@ $(function() {
 					<label class="block-label">패스워드</label>
 					<!-- <input name="password" type="password" value="" /> -->
 					<form:password path="password"/>
-					<!-- <spring:hasBindErrors name="userVO">
-					   <c:if test="${errors.hasFieldErrors('password') }">
-					        <p style="padding: 0; text-align: left; color: red">
-					        <strong>
-					        	<spring:message code="${errors.getFieldError('password').codes[0] }" 
-					        					text="${errors.getFieldError('password').defaultMessage }" />
-					        	<!-- ${errors.getFieldError( 'password' ).defaultMessage } 
-					        </strong>
-					        </p>
-					   </c:if>
-					</spring:hasBindErrors> -->
 					<p style="padding: 0; text-align: left; color: red">
 						<form:errors path="password" />
 					</p>
