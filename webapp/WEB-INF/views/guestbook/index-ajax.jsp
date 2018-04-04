@@ -28,11 +28,54 @@ form#add-form input[type='submit']			{ width: 100%; display:block; margin-bottom
 form#add-form input[type='submit']:hover	{ background-color: #93C15E; }
 
 ul#list-guestbook							{ width: 100%; }
-ul#list-guestbook li						{ padding-left: 45px; background: url('../assets/images/user.png') 0 20px no-repeat; position: relative; }
-ul#list-guestbook li strong					{ display: block; margin-bottom: 5px; color: #666;}
-ul#list-guestbook li p						{ padding: 15px; background-color: #FAFAFA; border: 1px solid #EEEFEF; border-radius: 5px; }
+ul#list-guestbook li						{ padding-left: 45px; background: url('../assets/images/user.png') 0 20px no-repeat; position: relative; margin-bottom: 15px; }
+ul#list-guestbook li strong					{ display: block; margin-left: 5px; margin-bottom: 5px; color: #666; float: left; }
+ul#list-guestbook li p.date					{ float: right; font-size: 0.95em; }
+ul#list-guestbook li p.content				{ padding: 15px; background-color: #FAFAFA; border: 1px solid #EEEFEF; border-radius: 5px; clear: both;}
 ul#list-guestbook li a						{ width:20px; height: 20px; font-size: 0; cursor: pointer; display: block; position: absolute; left: 20px; top: 40px; background: url('../assets/images/delete.png') 0 0 no-repeat; background-size: contain;  }
+
+
 </style>
+<script>
+	$(function() {
+		var index = ${ postCount };
+		var count = ${ postCount };
+		var startNumber = ${ startNumber };
+		
+		$("#btn-addlist").click(function() {
+			$.ajax({
+				url: '${ pageContext.servletContext.contextPath }/api/guestbook/list?idx=' + index,
+				type: 'GET',
+				data: "",
+				dataType: 'json',
+				success: function( response, status, xhr ) {
+					var list = response.data;
+					var lastList = $('#list-guestbook li:last')
+					for(var i = list.length-1; i >= 0 ; i--){
+						lastList.after("<li data-no='" + list[i].no + "'>"
+									 + "<strong>" + list[i].name + "</strong>"
+									 + "<p class='date'>" + list[i].regDate + "</p>"
+									 + "<p class='content'>"
+									 + list[i].content.replace("\n", "<br />")
+									 + "</p>"
+									 + "<a href='${ pageContext.servletContext.contextPath }/guestbook/delete/"+list[i].no+"' data-no='"+list[i].no+"'>삭제</a>"
+									 + "</li>"
+								 );
+					}
+					
+					index = index + count;
+					if( index > startNumber ) {
+						$('#btn-addlist').hide();
+					}
+				},
+				error: function( xhr, status, e ) {
+					console.error("[" + status + "] " + e);
+				}
+				
+			});
+		});
+	});
+</script>
 </head>
 <body>
 	<div id="container">
@@ -50,37 +93,20 @@ ul#list-guestbook li a						{ width:20px; height: 20px; font-size: 0; cursor: po
 				</div>
 				<hr />
 				<div id="list">
-				<ul id="list-guestbook">
-					<li data-no=''>
-						<strong>지나가다가</strong>
-						<p>
-							별루입니다.<br>
-							비번:1234 -,.-
-						</p>
-						<strong></strong>
-						<a href='' data-no=''>삭제</a> 
-					</li>
-					
-					<li data-no=''>
-						<strong>둘리</strong>
-						<p>
-							안녕하세요<br>
-							홈페이지가 개 굿 입니다.
-						</p>
-						<strong></strong>
-						<a href='' data-no=''>삭제</a> 
-					</li>
-
-					<li data-no=''>
-						<strong>주인</strong>
-						<p>
-							아작스 방명록 입니다.<br>
-							테스트~
-						</p>
-						<strong></strong>
-						<a href='' data-no=''>삭제</a> 
-					</li>
-				</ul>
+					<ul id="list-guestbook">
+						<c:forEach items="${ list }" var="vo" varStatus="status">
+							<li data-no='${ vo.no }'>
+								<strong>${ vo.name }</strong> <p class="date">${ vo.regDate }<p>
+								<p class="content">
+									${ fn:replace(vo.content, newLine, "<br />") }
+								</p>
+								<a href='${ pageContext.servletContext.contextPath }/guestbook/delete/${ vo.no }' data-no='${ vo.no }'>삭제</a> 
+							</li>
+						</c:forEach>
+					</ul>
+					<div style="width: 100%;">
+						<button id="btn-addlist" style="display: block; margin: 0 auto;">게시글 더 보기</button>
+					</div>
 				</div>
 			</div>
 			<div id="dialog-delete-form" title="메세지 삭제" style="display:none">

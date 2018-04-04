@@ -1,0 +1,24 @@
+@CHARSET "UTF-8";
+@import "mysite.css";
+
+#gallery									{ margin:20px auto;	width:540px; }
+#gallery div								{ margin: 10px 0; }
+#gallery div h1								{ background: url('../images/gallery.png') 0 0 no-repeat; padding-left: 40px; background-size: contain; display: inline; }
+#gallery div button#upload-image			{ display:block; float: right; background-color: #E8ECF6; padding: 6px; border: 1px solid #64A4DD; }
+#gallery ul									{ width: 100%; clear: both; }
+#gallery ul:after							{ content: ""; display: block; clear: both; }
+#gallery ul li								{ display:block; float: left; margin: 5px; position: relative; border: 2px solid #999; padding: 3px; }
+#gallery ul li a.image						{ display:block; width: 113px; height: 113px; background-repeat: no-repeat; background-size: cover; background-position: center; font-size: 0; border: 1px solid #777; }
+#gallery ul li a.del-button					{ display: none; position: absolute; right: 5px; top: 5px; background: url('../images/delete-image.png') 0 0 no-repeat; width: 15px; height: 15px; background-size: contain; font-size: 0; }
+#gallery ul li a.image:hover ~ a.del-button	{ display: block; }
+
+
+/* 이미지 업로드 팝업 레이어 */ 
+#dialog-upload-form 						{ text-align: left; }
+#dialog-upload-form p						{ padding:20px 0 5px 0; font-weight: bold; font-size:1.1em }
+#dialog-upload-form label, 
+#dialog-upload-form input					{ display:block; }
+#dialog-upload-form label					{ font-weight:bold; margin-top:10px; }
+#dialog-upload-form input					{ outline:none; margin-top:5px; }
+#dialog-upload-form input[type='text']		{ padding: 5px; border:2px solid #A9A9A9; width:260px; }
+

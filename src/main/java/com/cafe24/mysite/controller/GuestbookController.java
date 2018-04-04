@@ -51,7 +51,12 @@ public class GuestbookController {
     }
     
     @RequestMapping( value = "/ajax", method = RequestMethod.GET )
-    public String ajax() {
+    public String ajax( Model model ) {
+	List<GuestbookVO> list = gbService.getList(start);
+	Long startNumber = gbService.getCount();
+	model.addAttribute( "list", list );
+	model.addAttribute( "startNumber", startNumber);
+	model.addAttribute( "postCount", count );
 	return "guestbook/index-ajax";
     }
 
