@@ -105,7 +105,7 @@ ul#list-guestbook li a						{ width:20px; height: 20px; font-size: 0; cursor: po
 						</c:forEach>
 					</ul>
 					<div style="width: 100%;">
-						<button id="btn-addlist" style="display: block; margin: 0 auto;">게시글 더 보기</button>
+						<button id="btn-addlist" style="display: block; margin: 0 auto;">더 보기</button>
 					</div>
 				</div>
 			</div>

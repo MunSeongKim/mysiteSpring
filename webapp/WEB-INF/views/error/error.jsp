@@ -8,5 +8,6 @@
 </head>
 <body>
 	<h1>Oops! Sorry:(</h1>
+	<p>${errorMsg }</p>
 </body>
 </html>
