@@ -37,7 +37,7 @@ ul#list-guestbook li a						{ width:20px; height: 20px; font-size: 0; cursor: po
 /* dialog style */
 div#dialog-delete-form p						{ margin: 10px; }
 div#dialog-delete-form input[type='password']	{ padding: 5px; }
-
+div#dialog-message p							{ margin: 10px; }
 </style>
 <script>
 	// use to Dialog
@@ -46,6 +46,8 @@ div#dialog-delete-form input[type='password']	{ padding: 5px; }
 		$('#dialog-message p').text(message);
 		$('#dialog-message').dialog({
 			modal: true,
+			draggable: false,
+			resizable: false,
 			position: { my: "center", at: "center", of: "#add-form" },
 			buttons: {
 				"확인": function() {
@@ -84,6 +86,8 @@ div#dialog-delete-form input[type='password']	{ padding: 5px; }
 			autoOpen: false,
 			width: 350,
 			modal: true,
+			draggable: false,
+			resizable: false,
 			position: { my: "center", at: "top+20%", of: "#list-guestbook" },
 			buttons: {
 			  "삭제": function() {
