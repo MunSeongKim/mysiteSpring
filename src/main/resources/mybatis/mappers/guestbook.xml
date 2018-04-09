@@ -8,8 +8,25 @@
 		<![CDATA[
 			  SELECT no, name, content, DATE_FORMAT(reg_date, '%Y-%m-%d %H:%i:%s') as regDate
 			    FROM guestbook
+		]]>
+		<if test="_parameter > 0">
+			<![CDATA[WHERE no < #{_parameter}]]>
+		</if>
+		<![CDATA[
 			ORDER BY no DESC
-			   LIMIT #{start}, #{count};
+		]]>
+		<if test="_parameter != null">
+			<![CDATA[LIMIT 0, 5]]>
+		</if>
+	</select>
+	
+	<select id="select"
+			parameterType="Long"
+			resultType="guestbookvo">
+		<![CDATA[
+			  SELECT no, name, content, DATE_FORMAT(reg_date, '%Y-%m-%d %H:%i:%s') as regDate
+			    FROM guestbook
+			   WHERE no = #{no}
 		]]>
 	</select>
 	
@@ -20,12 +37,12 @@
 		]]>		
 	</select>
 	
-	<delete id="delete" parameterType="map">
+	<delete id="delete" parameterType="guestbookvo">
 		<![CDATA[
 			DELETE 
 			  FROM guestbook
 			 WHERE no = #{no}
-			   AND password = PASSWORD(${pwd})
+			   AND password = PASSWORD('${password}')
 		]]>
 	</delete>
 	
@@ -35,7 +52,7 @@
 			     VALUES(null, #{name}, PASSWORD(#{password}), #{content}, now())
 		]]>
 		<selectKey keyProperty="no" resultType="long" order="AFTER">
-			SELECT last_insert_id()
+			<![CDATA[SELECT last_insert_id()]]>
 		</selectKey>
 	</insert>
 </mapper>

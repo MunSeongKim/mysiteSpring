@@ -19,16 +19,11 @@ public class GuestbookController {
     @Autowired
     private GuestbookService gbService;
     
-    private static final Long start = 0L;
-    private static final Long count = 5L;
     
     @RequestMapping( "/list" )
     public String list( Model model ) {
-	List<GuestbookVO> list = gbService.getList(start);
-	Long startNumber = gbService.getCount();
+	List<GuestbookVO> list = gbService.getList();
 	model.addAttribute( "list", list );
-	model.addAttribute( "startNumber", startNumber);
-	model.addAttribute( "postCount", count );
 	return "guestbook/list";
     }
 
@@ -52,11 +47,9 @@ public class GuestbookController {
     
     @RequestMapping( value = "/ajax", method = RequestMethod.GET )
     public String ajax( Model model ) {
-	List<GuestbookVO> list = gbService.getList(start);
-	Long startNumber = gbService.getCount();
-	model.addAttribute( "list", list );
-	model.addAttribute( "startNumber", startNumber);
-	model.addAttribute( "postCount", count );
+	/*final Long initIndex = 0L;
+	List<GuestbookVO> list = gbService.getList(initIndex);
+	model.addAttribute( "list", list );*/
 	return "guestbook/index-ajax";
     }
 

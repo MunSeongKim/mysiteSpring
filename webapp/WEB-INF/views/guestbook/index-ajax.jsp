@@ -34,44 +34,188 @@ ul#list-guestbook li p.date					{ float: right; font-size: 0.95em; }
 ul#list-guestbook li p.content				{ padding: 15px; background-color: #FAFAFA; border: 1px solid #EEEFEF; border-radius: 5px; clear: both;}
 ul#list-guestbook li a						{ width:20px; height: 20px; font-size: 0; cursor: pointer; display: block; position: absolute; left: 20px; top: 40px; background: url('../assets/images/delete.png') 0 0 no-repeat; background-size: contain;  }
 
+/* dialog style */
+div#dialog-delete-form p						{ margin: 10px; }
+div#dialog-delete-form input[type='password']	{ padding: 5px; }
 
 </style>
 <script>
-	$(function() {
-		var index = ${ postCount };
-		var count = ${ postCount };
-		var startNumber = ${ startNumber };
+	// use to Dialog
+	var messageBox = function( title, message, callback ) {
+		$('#dialog-message').attr("title", title);
+		$('#dialog-message p').text(message);
+		$('#dialog-message').dialog({
+			modal: true,
+			position: { my: "center", at: "center", of: "#add-form" },
+			buttons: {
+				"확인": function() {
+					$(this).dialog("close");
+					
+				}
+			},
+			close: callback || function() {}
+		});
+	}
+
+	// use to Ajax
+	var index = 0;
+	var isEnd = false;
+	var render = function( mode, vo ) {
+		 var html = "<li data-no='"+vo.no+"'>"
+				 + "<strong>" + vo.name + "</strong>"
+				 + "<p class='date'>" + vo.regDate + "</p>"
+				 + "<p class='content'>" + vo.content.replace(/\n/gi, "<br />") + "</p>"
+				 + "<a class='btn-delete' data-no='"+vo.no+"'>삭제</a>"
+				 + "</li>";
+				 
+		if( mode == true ){
+			$('#list-guestbook').prepend( html );
+		} else {
+			$('#list-guestbook').append( html );	
+		}
 		
-		$("#btn-addlist").click(function() {
+		// $('#list-guestbook')[mode?"prepend":"append"](html);
+	};
+
+
+	$(function() {
+		// Dialog setting - 삭제시 비밀번호 입력 모달 다이얼로그
+		var deleteDialog = $( "#dialog-delete-form" ).dialog({
+			autoOpen: false,
+			width: 350,
+			modal: true,
+			position: { my: "center", at: "top+20%", of: "#list-guestbook" },
+			buttons: {
+			  "삭제": function() {
+				var password = $('#password-delete').val();
+				var no = $('#hidden-no').val();
+				  
+				// Ajax - request to delete
+				$.ajax({
+					url: '${ pageContext.servletContext.contextPath }/api/guestbook/delete',
+					type: 'POST',
+					dataType: 'json',
+					data: "no=" + no + "&password=" + password,
+					success: function(response) {
+						if( response.result == "fail"){
+							console.warn(response);
+							return ;
+						}
+						
+						if( response.data == -1 ){
+							$('.validateTips.normal').hide();
+							$('.validateTips.error').show();
+							$('#password-delete').val("");
+							$('#password-delete').focus();
+							return ;
+						}
+						
+						$('#list-guestbook li[data-no='+response.data+']').remove();
+						deleteDialog.dialog("close");
+					}
+				});
+			  },
+			  "취소": function() {
+			  	deleteDialog.dialog("close");
+			  }
+			},
+			close: function() {
+			  $('#password-delete').val("");
+			  $('#hidden-no').val("");
+			  $('.validateTips.normal').show();
+			  $('.validateTips.error').hide();
+			}
+		});
+		
+		// Live Event Listener - dynamic regist a event on target
+		$(document).on( "click", '#list-guestbook li a', function(e) {
+			e.preventDefault();
+			var no = $(this).data("no");
+			console.log(no);
+			$('#hidden-no').val(no);
+			deleteDialog.dialog('open');
+			
+		});
+		
+		// Ajax - Get a list 
+		$("#btn-fetch").click(function() {
+			if( isEnd == true ){
+				return;
+			}
+			
+			// 조건 판단 우선순위에 의한 값의 대입
+			// A || B 일때 A가 false이면 B의 값을 대입.
+			var index = $('#list-guestbook li').last().data('no') || 0;
+			
 			$.ajax({
 				url: '${ pageContext.servletContext.contextPath }/api/guestbook/list?idx=' + index,
 				type: 'GET',
 				data: "",
 				dataType: 'json',
 				success: function( response, status, xhr ) {
-					var list = response.data;
-					var lastList = $('#list-guestbook li:last')
-					for(var i = list.length-1; i >= 0 ; i--){
-						lastList.after("<li data-no='" + list[i].no + "'>"
-									 + "<strong>" + list[i].name + "</strong>"
-									 + "<p class='date'>" + list[i].regDate + "</p>"
-									 + "<p class='content'>"
-									 + list[i].content.replace("\n", "<br />")
-									 + "</p>"
-									 + "<a href='${ pageContext.servletContext.contextPath }/guestbook/delete/"+list[i].no+"' data-no='"+list[i].no+"'>삭제</a>"
-									 + "</li>"
-								 );
+					// 성공 유무
+					if( response.result != "success" ){
+						console.warn( response.message );
+						return ;
 					}
 					
-					index = index + count;
-					if( index > startNumber ) {
-						$('#btn-addlist').hide();
+					// 끝 감지
+					if( response.data.length < 5 ) { 
+						$('#btn-fetch').prop("disabled", true);
+						isEnd = true;
 					}
+					
+					// Render
+					$.each(response.data, function(index, vo) {
+						render(false, vo);
+					});
 				},
 				error: function( xhr, status, e ) {
 					console.error("[" + status + "] " + e);
 				}
-				
+			});
+		});
+		
+		// Ajax - regist a new post
+		$('#add-form').submit( function(event) {
+			event.preventDefault();
+			
+			var data = {};
+			$.each($(this).serializeArray(), function(index, obj) {
+				data[obj.name] = obj.value;
+			});
+			
+			if( data["name"] == "" ){
+				messageBox("메세지 등록", "이름이 비어 있습니다.", function(){
+					$("#input-name").focus();	
+				});
+				return ;
+			}
+			
+			if( data["password"] == "" ){
+				messageBox("메세지 등록", "비밀번호가 비어 있습니다.", function(){
+					$('#input-password').focus();
+				});
+				return ;
+			}
+			
+			if( data["content"] == "" ){
+				messageBox("메세지 등록", "내용이 비어 있습니다.", function(){
+					$('#tx-content').focus();	
+				});
+				return ;
+			}
+			
+			$.ajax({
+				url: "${ pageContext.servletContext.contextPath }/api/guestbook/insert",
+				type: "POST",
+				dataType: "json",
+				contentType: "application/json",
+				data : JSON.stringify(data),
+				success: function( response ) {
+					render(true, response.data);
+					$('#add-form')[0].reset();
+				}
 			});
 		});
 	});
@@ -84,32 +228,32 @@ ul#list-guestbook li a						{ width:20px; height: 20px; font-size: 0; cursor: po
 			<div id="guestbook">
 				<h1>방명록</h1>
 				<div id="input-form">
-					<form id="add-form" action="#">
-						<input type="text" id="input-name" placeholder="이름">
-						<input type="password" id="input-password" placeholder="비밀번호">
-						<textarea id="tx-content" placeholder="내용을 입력해 주세요."></textarea>
+					<form id="add-form" action="">
+						<input type="text" name="name" id="input-name" placeholder="이름">
+						<input type="password" name="password" id="input-password" placeholder="비밀번호">
+						<textarea id="tx-content" name="content" placeholder="내용을 입력해 주세요."></textarea>
 						<input type="submit" value="보내기" />
 					</form>
 				</div>
 				<hr />
 				<div id="list">
 					<ul id="list-guestbook">
-						<c:forEach items="${ list }" var="vo" varStatus="status">
+						<!-- <c:forEach items="${ list }" var="vo" varStatus="status">
 							<li data-no='${ vo.no }'>
 								<strong>${ vo.name }</strong> <p class="date">${ vo.regDate }<p>
 								<p class="content">
 									${ fn:replace(vo.content, newLine, "<br />") }
 								</p>
-								<a href='${ pageContext.servletContext.contextPath }/guestbook/delete/${ vo.no }' data-no='${ vo.no }'>삭제</a> 
+								<a class="btn-delete" data-no='${ vo.no }'>삭제</a> 
 							</li>
-						</c:forEach>
+						</c:forEach> -->
 					</ul>
 					<div style="width: 100%;">
-						<button id="btn-addlist" style="display: block; margin: 0 auto;">더 보기</button>
+						<button id="btn-fetch" style="display: block; margin: 0 auto;">가져오기</button>
 					</div>
 				</div>
 			</div>
-			<div id="dialog-delete-form" title="메세지 삭제" style="display:none">
+			<div id="dialog-delete-form" title="메세지 삭제" style="display:none;">
   				<p class="validateTips normal">작성시 입력했던 비밀번호를 입력하세요.</p>
   				<p class="validateTips error" style="display:none">비밀번호가 틀립니다.</p>
   				<form>
@@ -118,9 +262,9 @@ ul#list-guestbook li a						{ width:20px; height: 20px; font-size: 0; cursor: po
 					<input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
   				</form>
 			</div>
-			<div id="dialog-message" title="" style="display:none">
-  				<p></p>
-			</div>						
+			<div id="dialog-message" title="">
+			  <p></p>
+			</div>					
 		</div>
 		<c:import url="/WEB-INF/views/includes/navigation.jsp">
 			<c:param name="menu" value="guestbook-ajax"/>
