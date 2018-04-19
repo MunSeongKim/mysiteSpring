@@ -1,0 +1,29 @@
+@CHARSET "UTF-8";
+@import "mysite.css";
+
+* 											{-webkit-box-sizing: border-box; -moz-box-sizing: border-box; -o-box-sizing: border-box; -ms-box-sizing: border-box; box-sizing: border-box; }
+hr											{ margin: 20px 0;}
+div#guestbook								{ margin: 20px auto; width: 540px; }
+div#input-form,
+div#list									{ width: 100%; margin: 10px 0; }
+
+div#guestbook h1							{ background: url('../images/guestbook.png') 0 0 no-repeat; background-size: contain; padding-left: 40px; }
+
+form#add-form input[type='text'],
+form#add-form input[type='password'],
+form#add-form textarea						{ width: 100%; display: block; padding: 5px; margin-bottom: 10px; border: 1px solid #999; }
+form#add-form textarea						{ height:150px; resize:none; overflow-y: scorll;  }
+form#add-form input[type='submit']			{ width: 100%; display:block; margin-bottom: 10px; border: 1px solid #999; background-color: #FFF; height: 30px; font-weight: bold; cursor: pointer; }	
+form#add-form input[type='submit']:hover	{ background-color: #93C15E; }
+
+ul#list-guestbook							{ width: 100%; }
+ul#list-guestbook li						{ padding-left: 45px; background: url('../images/user.png') 0 20px no-repeat; position: relative; margin-bottom: 15px; }
+ul#list-guestbook li strong					{ display: block; margin-left: 5px; margin-bottom: 5px; color: #666; float: left; }
+ul#list-guestbook li p.date					{ float: right; font-size: 0.95em; }
+ul#list-guestbook li p.content				{ padding: 15px; background-color: #FAFAFA; border: 1px solid #EEEFEF; border-radius: 5px; clear: both;}
+ul#list-guestbook li a						{ width:20px; height: 20px; font-size: 0; cursor: pointer; display: block; position: absolute; left: 20px; top: 40px; background: url('../images/delete.png') 0 0 no-repeat; background-size: contain;  }
+
+/* dialog style */
+div#dialog-delete-form p						{ margin: 10px; }
+div#dialog-delete-form input[type='password']	{ padding: 5px; }
+div#dialog-message p							{ margin: 10px; }

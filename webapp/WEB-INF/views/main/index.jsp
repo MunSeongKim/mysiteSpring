@@ -10,6 +10,7 @@
 <link href="${ pageContext.servletContext.contextPath }/assets/css/main.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+	<c:out value="${test }"/>
 	<div id="container">
 		<c:import url="/WEB-INF/views/includes/header.jsp" />
 		

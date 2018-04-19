@@ -50,7 +50,7 @@ $(function(){
 			<div id="gallery">
 				<div>
 					<h1>갤러리</h1>
-					<button id="upload-image">이미지 올리기</button>
+					<button id="upload-image" class="ui-button ui-widget ui-corner-all">이미지 올리기</button>
 				</div>
 				<ul>
 					<li>
@@ -58,7 +58,6 @@ $(function(){
 							data-lightbox="gallery"
 							class="image"
 							style="background-image:url('${pageContext.request.contextPath }/assets/gallery-examples/im1.jpg')">&nbsp;</a>
-							
 						<a	href="${pageContext.request.contextPath }/gallery/delete/1"
 							class="del-button"
 							title="삭제">삭제</a>
