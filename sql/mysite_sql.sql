@@ -1,4 +1,3 @@
-
 -- 게시판
 ALTER TABLE `board`
 	DROP FOREIGN KEY `FK_users_TO_board`; -- 회원 -> 게시판
@@ -210,6 +209,7 @@ CALL loopInsert$$
 SELECT * FROM board;
 
 
+SELECT PASSWORD('mypass');
 
 
 
